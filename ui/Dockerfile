@@ -1,3 +1,14 @@
+# Build UI in 
+FROM node:lts
+
+WORKDIR /ui
+COPY ./package.json .
+COPY ./package-lock.json .
+RUN npm install
+ADD . .
+
+RUN npm run build
+
 # Nginx web server from the official docker registry
 FROM nginx:1.14.0-alpine
 
@@ -9,4 +20,4 @@ COPY conf /etc/nginx
 # The static site is built using npm run build
 # the output of build is stored in the dist dir
 WORKDIR /usr/share/nginx/html
-COPY ./dist/ /usr/share/nginx/html
+COPY --from=0 /ui/dist /usr/share/nginx/html
