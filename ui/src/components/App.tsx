@@ -8,14 +8,13 @@ import { DefaultComponent } from './DefaultComponent'
 import { Home } from './Home'
 import { Navbar } from './Navbar'
 import { Person } from './Person'
-import { PrivateRoute } from './PrivateRoute'
 import { Title } from './Title'
 
 import './../styles/App.css'
 
 // Webpack will automatically replace this variable during build time
 const appConfig = {
-    clientID: process.env.WEBPACK_PROP_AAD_CLIENT_ID, // defaulted to '' when no OAuth client id is passed in
+    clientID: '', // defaulted to '' when no OAuth client id is passed in
 }
 
 // initialize the UserAgentApplication globally so popup and iframe can run in the background
@@ -87,8 +86,8 @@ export class App extends React.Component {
                     <AuthResponseBar />
                     <Router basepath={basepath}>
                         <Home path='/' />
-                        <PrivateRoute as={Person} path='/people' />
-                        <PrivateRoute as={Title} path='/titles' />
+                        <Person path='/people' />
+                        <Title path='/titles' />
                         <DefaultComponent default />
                     </Router>
                 </div>
