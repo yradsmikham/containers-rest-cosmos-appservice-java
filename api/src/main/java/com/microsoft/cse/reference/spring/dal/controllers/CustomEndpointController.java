@@ -1,5 +1,6 @@
 package com.microsoft.cse.reference.spring.dal.controllers;
 
+import com.microsoft.cse.reference.spring.dal.JaegerTracerHelper;
 import com.microsoft.cse.reference.spring.dal.converters.IntegerToBoolean;
 import com.microsoft.cse.reference.spring.dal.converters.EmptyStringToNull;
 import com.microsoft.cse.reference.spring.dal.models.PrincipalWithName;
@@ -15,6 +16,11 @@ import java.util.*;
 import static java.util.Arrays.asList;
 import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
 
+import io.opentracing.Span;
+import io.opentracing.Tracer;
+
+import com.google.common.collect.ImmutableMap;
+
 /**
  *
  * Create a custom controller so that when a user hits a URL that's not formatted like the search endpoint
@@ -25,9 +31,11 @@ public class CustomEndpointController {
     private IntegerToBoolean integerToBoolean = new IntegerToBoolean();
     private EmptyStringToNull emptyStringToNull = new EmptyStringToNull();
     private MongoTemplate mongoTemplate;
+    private final Tracer tracer;
 
     public CustomEndpointController(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+        this.tracer = JaegerTracerHelper.initTracer("custom-endpoint-controller");
     }
 
     /**
@@ -57,6 +65,9 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/people/{nconst}/titles")
     public List<Title> getAllTitles(@PathVariable String nconst) {
+        Span span = tracer.buildSpan("get-person-titles").start();
+        span.log(ImmutableMap.of("event", "query-person-titles", "value", nconst));
+
         MatchOperation filterByNconst = match(Criteria.where("nconst").is(nconst));
 
         LookupOperation titleLookup = LookupOperation.newLookup()
@@ -73,6 +84,8 @@ public class CustomEndpointController {
 
         AggregationResults<Document> aggregationResults = mongoTemplate.aggregate(aggregation, "principals_mapping", Document.class);
 
+        span.finish();
+
         return documentToTitleList(aggregationResults);
     }
 
@@ -86,6 +99,9 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/titles/{tconst}/people")
     public List<PrincipalWithName> getAllPeople(@PathVariable String tconst) {
+        Span span = tracer.buildSpan("get-people-from-title").start();
+        span.log(ImmutableMap.of("event", "query-people-from-title", "value", tconst));
+
         MatchOperation filterByNconst = match(Criteria.where("tconst").is(tconst));
         LookupOperation nameLookup = LookupOperation.newLookup()
                 .from("names")
@@ -105,6 +121,8 @@ public class CustomEndpointController {
         for (PrincipalWithName p: mappedResults) {
             p.person.remove("_id");
         }
+
+        span.finish();
 
         return mappedResults;
     }
