@@ -3,18 +3,12 @@
     "outDir": "./dist/",
     "module": "commonjs",
     "target": "es5",
+    "strict": true,
     "jsx": "react",
-    "lib": [ "es2015", "dom" ],
+    "lib": ["es2015", "dom"],
     "allowSyntheticDefaultImports": true,
-    "typeRoots": [
-      "./node_modules/@types",
-      "./types"
-    ]
+    "typeRoots": ["./node_modules/@types", "./types"]
   },
-  "exclude": [
-    "./node_modules/**/*"
-  ],
-  "include": [
-    "./src/**/*"
-  ]
+  "exclude": ["./node_modules/**/*"],
+  "include": ["./src/**/*"]
 }

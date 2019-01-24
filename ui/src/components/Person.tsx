@@ -5,7 +5,7 @@ import { PageForm } from './PageForm'
 
 export interface IPersonProps { path: string }
 
-export interface IPersonState { loading: boolean, personId: string, result: object }
+export interface IPersonState { loading: boolean, personId?: string, result?: object }
 
 export interface IPersonResponse extends Response {
   _embedded?: { persons: Array<{ nconst: string }> },
@@ -18,10 +18,8 @@ export interface IPersonResult { nconst: string }
 export class Person extends React.Component<IPersonProps, IPersonState> {
   public static contextType = AuthContext
 
-  public state = {
+  public state: IPersonState = {
     loading: false,
-    personId: null,
-    result: null,
   }
 
   public render() {
@@ -47,12 +45,11 @@ export class Person extends React.Component<IPersonProps, IPersonState> {
     )
   }
 
-  private handleNameInputChange = (event) => this.setState({
+  private handleNameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => this.setState({
     personId: event.target.value,
-    result: null,
   })
 
-  private handleFormSubmit = async (event) => {
+  private handleFormSubmit = async (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault()
 
     this.setState({ loading: true })
@@ -75,11 +72,11 @@ export class Person extends React.Component<IPersonProps, IPersonState> {
       const response = await fetch(endpoint, options)
       const resOut: IPersonResponse = await response.json()
 
-      if (resOut.hasOwnProperty('error')) {
+      if (resOut.error) {
         throw new Error(`Error: ${resOut.error}, ${resOut.error_description}`)
       } else if (id) {
         this.setState({ result: resOut })
-      } else {
+      } else if (resOut._embedded) {
         const persons = resOut._embedded.persons
         const result: IPersonResult = persons[Math.floor(Math.random() * persons.length)]
         this.setState({ result, personId: result.nconst })

@@ -5,7 +5,7 @@ import { PageForm } from './PageForm'
 
 export interface ITitleProps { path: string }
 
-export interface ITitleState { loading: boolean, titleId: string, result: object }
+export interface ITitleState { loading: boolean, titleId?: string, result?: object }
 
 export interface ITitleResponse extends Response {
   _embedded?: { titles: Array<{ tconst: string }> },
@@ -18,10 +18,8 @@ export interface ITitleResult { tconst: string }
 export class Title extends React.Component<ITitleProps, ITitleState> {
   public static contextType = AuthContext
 
-  public state = {
+  public state: ITitleState = {
     loading: false,
-    result: null,
-    titleId: null,
   }
 
   public render() {
@@ -47,12 +45,13 @@ export class Title extends React.Component<ITitleProps, ITitleState> {
     )
   }
 
-  private handleNameInputChange = (event) => this.setState({
-    result: null,
-    titleId: event.target.value,
-  })
+  private handleNameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({
+      titleId: event.target.value,
+    })
+  }
 
-  private handleFormSubmit = async (event) => {
+  private handleFormSubmit = async (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault()
 
     this.setState({ loading: true })
@@ -79,10 +78,13 @@ export class Title extends React.Component<ITitleProps, ITitleState> {
         throw new Error(`Error: ${resOut.error}, ${resOut.error_description}`)
       } else if (id) {
         this.setState({ result: resOut })
-      } else {
+      } else if (resOut._embedded) {
         const titles = resOut._embedded.titles
         const result: ITitleResult = titles[Math.floor(Math.random() * titles.length)]
         this.setState({ result, titleId: result.tconst })
+      } else {
+          throw new Error('Response does not match expected format. _embedded not found\n' +
+          'Received: ${JSON.stringify(resOut)}')
       }
     } catch (err) {
       this.setState({ result: { error: err.message } })

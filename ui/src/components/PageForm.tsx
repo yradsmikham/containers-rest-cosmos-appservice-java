@@ -3,8 +3,8 @@ import * as React from 'react'
 export interface IPageFormProps {
   inputTitle: string,
   inputPlaceholder: string,
-  onInputChange: (event) => void,
-  onSubmitClick: (event) => void,
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => any,
+  onSubmitClick: (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => any,
 }
 
 export function PageForm(props: IPageFormProps) {

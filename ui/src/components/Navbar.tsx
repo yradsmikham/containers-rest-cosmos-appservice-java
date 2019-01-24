@@ -1,11 +1,10 @@
 import { Link } from '@reach/router'
 import * as React from 'react'
 
+import './../styles/Navbar.css'
 import { AuthButton } from './AuthButton'
 
-import './../styles/Navbar.css'
-
-const isActive = ({ isCurrent }) => {
+const isActive = ({ isCurrent }: {isCurrent: boolean}) => {
     return {
         className: isCurrent ? 'nav-link active' : 'nav-link',
     }

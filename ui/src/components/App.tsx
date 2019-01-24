@@ -1,7 +1,8 @@
 import { Router } from '@reach/router'
-import * as Msal from 'msal'
+import { UserAgentApplication } from 'msal'
 import * as React from 'react'
 
+import './../styles/App.css'
 import { AuthProvider } from './AuthContext'
 import { AuthResponseBar } from './AuthResponseBar'
 import { DefaultComponent } from './DefaultComponent'
@@ -10,8 +11,6 @@ import { Navbar } from './Navbar'
 import { Person } from './Person'
 import { Title } from './Title'
 
-import './../styles/App.css'
-
 // Webpack will automatically replace this variable during build time
 const appConfig = {
     clientID: '', // defaulted to '' when no OAuth client id is passed in
@@ -19,7 +18,7 @@ const appConfig = {
 
 // initialize the UserAgentApplication globally so popup and iframe can run in the background
 // short circuit userAgentApp. If clientID is null so is userAgentApp
-const userAgentApp = appConfig.clientID && new Msal.UserAgentApplication(appConfig.clientID, null, null)
+const userAgentApp = appConfig.clientID && new UserAgentApplication(appConfig.clientID, null, () => null)
 
 // webpack replaces this variable on build time
 let basepath = process.env.WEBPACK_PROP_UI_BASEPATH || '' // default to empty string for testing
@@ -45,18 +44,28 @@ export class App extends React.Component {
                 console.warn('AAD Client ID has not been configured. If you are currently in production mode, see the \'deploy\' documentation for details on how to fix this.')
                 this.setState({ accessToken: '' })
             }
-        } else { // normal or 'production' auth flow
+        } else if (userAgentApp === '') { // normal or 'production' auth flow
+            alert('userAgentApp not initialized')
+        } else {
             let accessToken = null
             try {
                 if (this.state.accessToken !== null) {
                     // log out
-                    await userAgentApp.logout()
+                    if (userAgentApp) {
+                        await userAgentApp.logout()
+                    } else {
+                        alert('userAgentApp not initialized')
+                    }
                 } else {
                     // log in
                     const graphScopes = [appConfig.clientID]
-                    await userAgentApp.loginPopup(graphScopes)
-                    accessToken = await userAgentApp.acquireTokenSilent(graphScopes,
-                        'https://login.microsoftonline.com/microsoft.onmicrosoft.com')
+                    if (userAgentApp) {
+                        await userAgentApp.loginPopup(graphScopes)
+                        accessToken = await userAgentApp.acquireTokenSilent(graphScopes,
+                            'https://login.microsoftonline.com/microsoft.onmicrosoft.com')
+                    } else {
+                        alert('userAgentApp not initialized')
+                    }
                 }
                 this.setState({ accessToken })
             } catch (err) {
@@ -75,12 +84,7 @@ export class App extends React.Component {
         // by linking the accessToken to the app state we can be certain the
         // context will always update and propogate the value to subscribed nodes
         return (
-            <AuthProvider value={{
-                accessToken: this.state.accessToken,
-                authResponse: this.state.authResponse,
-                handleAuth: this.handleAuth,
-                setAuthResponse: this.setAuthResponse,
-            }}>
+            <AuthProvider value={{handleAuth: this.handleAuth}}>
                 <div className='app-container'>
                     <Navbar basepath={basepath} />
                     <AuthResponseBar />
