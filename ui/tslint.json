@@ -1,20 +1,9 @@
 {
-    "defaultSeverity": "error",
-    "extends": [
-        "tslint:recommended"
-    ],
-    "jsRules": {},
-    "rules": {
-        "no-console": [false],
-        "quotemark": [true, "single"],
-        "semicolon": [true, "never"],
-        "indent": [true, "spaces", 4],
-        "ordered-imports": [
-            true,
-            {
-                "grouped-imports": true
-            }
-        ]
-    },
-    "rulesDirectory": []
+  "defaultSeverity": "error",
+  "extends": ["tslint:recommended", "tslint-config-prettier"],
+  "jsRules": {},
+  "rules": {
+    "no-console": [false]
+  },
+  "rulesDirectory": []
 }

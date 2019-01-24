@@ -1,7 +1,7 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
-const webpack = require('webpack')
-require('dotenv').config()
+const path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const webpack = require("webpack");
+require("dotenv").config();
 
 module.exports = {
   entry: "./src/index.tsx",
@@ -23,8 +23,8 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/public/index.html',
-      favicon: './src/public/mountains.svg'
+      template: "./src/public/index.html",
+      favicon: "./src/public/mountains.svg"
     }),
     // DefinePlugin will inject this env variable anywhere in the code base it ref the attr name
     // new webpack.DefinePlugin({
@@ -33,9 +33,9 @@ module.exports = {
     //   WEBPACK_PROP_UI_BASEPATH: process.env.WEBPACK_PROP_UI_BASEPATH ? `"${process.env.WEBPACK_PROP_UI_BASEPATH}"` : null
     // }),
     new webpack.EnvironmentPlugin({
-      WEBPACK_PROP_AAD_CLIENT_ID: '',
-      WEBPACK_PROP_API_BASE_URL: '',
-      WEBPACK_PROP_UI_BASEPATH: 'ui'
+      WEBPACK_PROP_AAD_CLIENT_ID: "",
+      WEBPACK_PROP_API_BASE_URL: "",
+      WEBPACK_PROP_UI_BASEPATH: "ui"
     })
-  ],
-}
+  ]
+};

@@ -1,7 +1,7 @@
-@import url('https://fonts.googleapis.com/css?family=Open+Sans');
+@import url("https://fonts.googleapis.com/css?family=Open+Sans");
 
 body {
-  font-family: 'Open Sans', Helvetica, sans-serif;
+  font-family: "Open Sans", Helvetica, sans-serif;
   padding: 0;
   margin: 0;
 }
@@ -60,7 +60,7 @@ body {
   background-color: rgb(50, 146, 202);
   border: 1px solid rgb(50, 146, 202);
   border-radius: 5px;
-  color: #FFF;
+  color: #fff;
   font-size: 1.2rem;
   padding: 10px 0;
 }
@@ -98,7 +98,7 @@ body {
   padding: 5px 15px;
 }
 .auth-message {
-  color: rgb(221, 26, 26)
+  color: rgb(221, 26, 26);
 }
 
 .auth-message-close-button {

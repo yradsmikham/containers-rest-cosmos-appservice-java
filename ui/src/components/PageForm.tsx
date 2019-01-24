@@ -1,33 +1,32 @@
-import * as React from 'react'
+import * as React from "react";
 
 export interface IPageFormProps {
-  inputTitle: string,
-  inputPlaceholder: string,
-  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => any,
-  onSubmitClick: (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => any,
+  inputTitle: string;
+  inputPlaceholder: string;
+  onInputChange: (event: React.ChangeEvent<HTMLInputElement>) => any;
+  onSubmitClick: (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => any;
 }
 
 export function PageForm(props: IPageFormProps) {
   return (
-    <form className='form'>
+    <form className="form">
       <label>
-        <span className='form-field-pre-text'>{props.inputTitle}</span>
+        <span className="form-field-pre-text">{props.inputTitle}</span>
         <input
-          className='form-field-input'
-          type='text'
-          name='id'
+          className="form-field-input"
+          type="text"
+          name="id"
           onChange={props.onInputChange}
           placeholder={props.inputPlaceholder}
         />
-       <span className='form-field-sub-text'></span>
-
+        <span className="form-field-sub-text" />
       </label>
       <input
-        className='form-field-submit'
-        type='submit'
-        value='Search'
+        className="form-field-submit"
+        type="submit"
+        value="Search"
         onClick={props.onSubmitClick}
       />
     </form>
-  )
+  );
 }

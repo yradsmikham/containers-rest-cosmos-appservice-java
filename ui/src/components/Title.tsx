@@ -1,95 +1,116 @@
-import * as React from 'react'
+import * as React from "react";
 
-import { AuthContext } from './AuthContext'
-import { PageForm } from './PageForm'
+import { AuthContext } from "./AuthContext";
+import { PageForm } from "./PageForm";
 
-export interface ITitleProps { path: string }
-
-export interface ITitleState { loading: boolean, titleId?: string, result?: object }
-
-export interface ITitleResponse extends Response {
-  _embedded?: { titles: Array<{ tconst: string }> },
-  error?: string,
-  error_description?: string
+export interface ITitleProps {
+  path: string;
 }
 
-export interface ITitleResult { tconst: string }
+export interface ITitleState {
+  loading: boolean;
+  titleId?: string;
+  result?: object;
+}
+
+export interface ITitleResponse extends Response {
+  _embedded?: { titles: Array<{ tconst: string }> };
+  error?: string;
+  error_description?: string;
+}
+
+export interface ITitleResult {
+  tconst: string;
+}
 
 export class Title extends React.Component<ITitleProps, ITitleState> {
-  public static contextType = AuthContext
+  public static contextType = AuthContext;
 
   public state: ITitleState = {
-    loading: false,
-  }
+    loading: false
+  };
 
   public render() {
     return (
-      <div className='page-container'>
-        <div className='form-container'>
+      <div className="page-container">
+        <div className="form-container">
           <h1>Search Titles</h1>
-          <p className='form-description'>Enter an ID to get information about a title from the database.
-            Leave the form empty to get information about a random title.</p>
+          <p className="form-description">
+            Enter an ID to get information about a title from the database.
+            Leave the form empty to get information about a random title.
+          </p>
           <PageForm
-            inputTitle='Title ID:'
-            inputPlaceholder='Title ID'
+            inputTitle="Title ID:"
+            inputPlaceholder="Title ID"
             onInputChange={this.handleNameInputChange}
             onSubmitClick={this.handleFormSubmit}
           />
         </div>
-        <div className='results-container'>
-          <h2 className='results-title'>{`Results for Title ID: ${this.state.result ? this.state.titleId : ''}`}</h2>
-          <pre className='results-view'>{JSON.stringify(this.state.result, null, 2)}</pre>
-          <h4>{this.state.loading ? 'Loading. . .' : null}</h4>
+        <div className="results-container">
+          <h2 className="results-title">{`Results for Title ID: ${
+            this.state.result ? this.state.titleId : ""
+          }`}</h2>
+          <pre className="results-view">
+            {JSON.stringify(this.state.result, null, 2)}
+          </pre>
+          <h4>{this.state.loading ? "Loading. . ." : null}</h4>
         </div>
       </div>
-    )
+    );
   }
 
-  private handleNameInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  private handleNameInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     this.setState({
-      titleId: event.target.value,
-    })
-  }
+      titleId: event.target.value
+    });
+  };
 
-  private handleFormSubmit = async (event: React.MouseEvent<HTMLInputElement>) => {
-    event.preventDefault()
+  private handleFormSubmit = async (
+    event: React.MouseEvent<HTMLInputElement>
+  ) => {
+    event.preventDefault();
 
-    this.setState({ loading: true })
+    this.setState({ loading: true });
 
     // set up endpoint
-    const id = this.state.titleId && this.state.titleId.replace(/\s+/g, '')
-    const base = `${process.env.WEBPACK_PROP_API_BASE_URL}/titles`
-    const endpoint = id ? base + id : base
+    const id = this.state.titleId && this.state.titleId.replace(/\s+/g, "");
+    const base = `${process.env.WEBPACK_PROP_API_BASE_URL}/titles`;
+    const endpoint = id ? base + id : base;
 
     // set up request header with Bearer token
-    const headers = new Headers()
-    const bearer = `Bearer ${this.context.accessToken}`
-    headers.append('Authorization', bearer)
+    const headers = new Headers();
+    const bearer = `Bearer ${this.context.accessToken}`;
+    headers.append("Authorization", bearer);
     const options = {
       headers,
-      method: 'GET',
-    }
+      method: "GET"
+    };
 
     try {
-      const response = await fetch(endpoint, options)
-      const resOut: ITitleResponse = await response.json()
+      const response = await fetch(endpoint, options);
+      const resOut: ITitleResponse = await response.json();
 
-      if (resOut.hasOwnProperty('error')) {
-        throw new Error(`Error: ${resOut.error}, ${resOut.error_description}`)
+      if (resOut.hasOwnProperty("error")) {
+        throw new Error(`Error: ${resOut.error}, ${resOut.error_description}`);
       } else if (id) {
-        this.setState({ result: resOut })
+        this.setState({ result: resOut });
       } else if (resOut._embedded) {
-        const titles = resOut._embedded.titles
-        const result: ITitleResult = titles[Math.floor(Math.random() * titles.length)]
-        this.setState({ result, titleId: result.tconst })
+        const titles = resOut._embedded.titles;
+        const result: ITitleResult =
+          titles[Math.floor(Math.random() * titles.length)];
+        this.setState({ result, titleId: result.tconst });
       } else {
-          throw new Error('Response does not match expected format. _embedded not found\n' +
-          'Received: ${JSON.stringify(resOut)}')
+        throw new Error(
+          "Response does not match expected format. _embedded not found\n" +
+            "Received: ${JSON.stringify(resOut)}"
+        );
       }
     } catch (err) {
-      this.setState({ result: { error: err.message } })
+      this.setState({ result: { error: err.message } });
     } finally {
-      this.setState({ loading: false })
+      this.setState({ loading: false });
     }
-  }
+  };
 }

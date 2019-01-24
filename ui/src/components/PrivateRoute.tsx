@@ -1,37 +1,54 @@
-import * as React from 'react'
+import * as React from "react";
 
-import { AuthContext } from './AuthContext'
-import { Home } from './Home'
+import { AuthContext } from "./AuthContext";
+import { Home } from "./Home";
 
-export interface IPrivateRouteProps { as: React.ComponentType, path: string }
+export interface IPrivateRouteProps {
+  as: React.ComponentType;
+  path: string;
+}
 
 export class PrivateRoute extends React.Component<IPrivateRouteProps> {
-  public static contextType = AuthContext
+  public static contextType = AuthContext;
 
   public componentDidMount() {
     if (this.context.accessToken === null) {
-      this.context.setAuthResponse(`Please log in to access: ${this.props.path}`)
+      this.context.setAuthResponse(
+        `Please log in to access: ${this.props.path}`
+      );
     }
   }
 
   public componentDidUpdate(prevProps: IPrivateRouteProps) {
-    if (this.context.accessToken === null && this.props.path !== prevProps.path) {
-      this.context.setAuthResponse(`Please log in to access: ${this.props.path}`)
-    } else if (this.context.authResponse !== null && this.context.accessToken !== null) {
-      this.context.setAuthResponse(null)
+    if (
+      this.context.accessToken === null &&
+      this.props.path !== prevProps.path
+    ) {
+      this.context.setAuthResponse(
+        `Please log in to access: ${this.props.path}`
+      );
+    } else if (
+      this.context.authResponse !== null &&
+      this.context.accessToken !== null
+    ) {
+      this.context.setAuthResponse(null);
     }
   }
 
   public componentWillUnmount() {
-    this.context.setAuthResponse(null)
+    this.context.setAuthResponse(null);
   }
 
   public render() {
-    const { as: Component, ...props } = this.props
+    const { as: Component, ...props } = this.props;
     // this private route uses the existence of the accessToken to
     // lock/unlock the private routes. We don't pass down the values from
     // context as we would rather subscribe to them directly in the
     // components themselves.
-    return this.context.accessToken !== null ? <Component {...props} /> : <Home {...props} />
+    return this.context.accessToken !== null ? (
+      <Component {...props} />
+    ) : (
+      <Home {...props} />
+    );
   }
 }
