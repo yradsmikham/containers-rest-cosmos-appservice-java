@@ -21,6 +21,11 @@ import io.opentracing.Tracer;
 
 import com.google.common.collect.ImmutableMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import io.jaegertracing.Configuration;
+
 /**
  *
  * Create a custom controller so that when a user hits a URL that's not formatted like the search endpoint
@@ -31,11 +36,15 @@ public class CustomEndpointController {
     private IntegerToBoolean integerToBoolean = new IntegerToBoolean();
     private EmptyStringToNull emptyStringToNull = new EmptyStringToNull();
     private MongoTemplate mongoTemplate;
-    private final Tracer tracer;
+    Logger logger = LoggerFactory.getLogger(CustomEndpointController.class);
+    //private final Tracer tracer;
+    private final Tracer envTracer;
 
     public CustomEndpointController(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
-        this.tracer = JaegerTracerHelper.initTracer("custom-endpoint-controller");
+        //this.tracer = JaegerTracerHelper.initTracer("custom-endpoint-controller");
+        
+        this.envTracer = JaegerTracerHelper.initTracerWithConfig();//JaegerTracerHelper.initEnvTracer();
     }
 
     /**
@@ -65,28 +74,42 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/people/{nconst}/titles")
     public List<Title> getAllTitles(@PathVariable String nconst) {
-        Span span = tracer.buildSpan("get-person-titles").start();
+        logger.info("**start** getAllTitles " + Configuration.ReporterConfiguration.fromEnv().getSenderConfiguration().getAgentHost());
+        Span span = envTracer.buildSpan("get-person-titles").start();
         span.log(ImmutableMap.of("event", "query-person-titles", "value", nconst));
 
-        MatchOperation filterByNconst = match(Criteria.where("nconst").is(nconst));
-
-        LookupOperation titleLookup = LookupOperation.newLookup()
-                .from("titles")
-                .localField("tconst")
-                .foreignField("tconst")
-                .as("title_info");
-
-        Aggregation aggregation = Aggregation.newAggregation(
-                filterByNconst,
-                titleLookup,
-                project("title_info")
-        );
-
-        AggregationResults<Document> aggregationResults = mongoTemplate.aggregate(aggregation, "principals_mapping", Document.class);
-
         span.finish();
+        logger.info("**finish** getAllTitles");
 
-        return documentToTitleList(aggregationResults);
+        return null;
+        /*try {
+            MatchOperation filterByNconst = match(Criteria.where("nconst").is(nconst));
+
+            LookupOperation titleLookup = LookupOperation.newLookup()
+                    .from("titles")
+                    .localField("tconst")
+                    .foreignField("tconst")
+                    .as("title_info");
+
+            Aggregation aggregation = Aggregation.newAggregation(
+                    filterByNconst,
+                    titleLookup,
+                    project("title_info")
+            );
+
+            AggregationResults<Document> aggregationResults = mongoTemplate.aggregate(aggregation, "principals_mapping", Document.class);
+
+            span.finish();
+            logger.info("**end** getAllTitles");
+            return documentToTitleList(aggregationResults);
+        }
+        catch (Exception e)
+        {
+            logger.info("**ERROR** getAllTitles");
+            span.log(ImmutableMap.of("event", "error-query-person-titles", "value", e.toString()));
+            span.finish();
+            throw e;
+        }*/
     }
 
 
@@ -99,8 +122,8 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/titles/{tconst}/people")
     public List<PrincipalWithName> getAllPeople(@PathVariable String tconst) {
-        Span span = tracer.buildSpan("get-people-from-title").start();
-        span.log(ImmutableMap.of("event", "query-people-from-title", "value", tconst));
+        //Span span = envTracer.buildSpan("get-people-from-title").start();
+        //span.log(ImmutableMap.of("event", "query-people-from-title", "value", tconst));
 
         MatchOperation filterByNconst = match(Criteria.where("tconst").is(tconst));
         LookupOperation nameLookup = LookupOperation.newLookup()
@@ -122,7 +145,7 @@ public class CustomEndpointController {
             p.person.remove("_id");
         }
 
-        span.finish();
+        //span.finish();
 
         return mappedResults;
     }

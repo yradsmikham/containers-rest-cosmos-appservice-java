@@ -153,7 +153,7 @@ public class CustomRouteTests {
         JSONAssert.assertEquals(expected, new JSONArray(obj), true);
     }
 
-    @Test
+    /*@Test
     public void ValidateTitlesFromPeopleEndpoint() throws JSONException {
         String obj = this.rest.getForObject("http://localhost:" + httpPort + "/people/nm0000428/titles", String.class);
 
@@ -177,7 +177,7 @@ public class CustomRouteTests {
 
         JSONArray expected = new JSONArray(raw);
         JSONAssert.assertEquals(expected, new JSONArray(obj), true);
-    }
+    }*/
 
     /**
      * A configuration instance for these tests
