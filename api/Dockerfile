@@ -29,4 +29,4 @@ EXPOSE 8080
 COPY --from=build /tmp/target/spring-dal-0.0.1-SNAPSHOT.jar spring-dal.jar
 
 # Run the jar file 
-ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/spring-dal.jar"]
+ENTRYPOINT ["java","-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=n","-Djava.security.egd=file:/dev/./urandom","-jar","/spring-dal.jar"]

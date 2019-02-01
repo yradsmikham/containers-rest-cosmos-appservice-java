@@ -1,25 +1,32 @@
 package com.microsoft.cse.reference.spring.dal.controllers;
 
-import com.microsoft.cse.reference.spring.dal.JaegerTracerHelper;
-import com.microsoft.cse.reference.spring.dal.converters.IntegerToBoolean;
+import com.google.common.collect.ImmutableMap;
 import com.microsoft.cse.reference.spring.dal.converters.EmptyStringToNull;
+import com.microsoft.cse.reference.spring.dal.converters.IntegerToBoolean;
 import com.microsoft.cse.reference.spring.dal.models.PrincipalWithName;
 import com.microsoft.cse.reference.spring.dal.models.Title;
-import org.bson.Document;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.aggregation.*;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.*;
-
-import static java.util.Arrays.asList;
-import static org.springframework.data.mongodb.core.aggregation.Aggregation.*;
-
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import org.bson.Document;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.aggregation.Aggregation;
+import org.springframework.data.mongodb.core.aggregation.AggregationResults;
+import org.springframework.data.mongodb.core.aggregation.LookupOperation;
+import org.springframework.data.mongodb.core.aggregation.MatchOperation;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.collect.ImmutableMap;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.match;
+import static org.springframework.data.mongodb.core.aggregation.Aggregation.project;
 
 /**
  *
@@ -28,14 +35,16 @@ import com.google.common.collect.ImmutableMap;
  */
 @RestController
 public class CustomEndpointController {
+
     private IntegerToBoolean integerToBoolean = new IntegerToBoolean();
     private EmptyStringToNull emptyStringToNull = new EmptyStringToNull();
     private MongoTemplate mongoTemplate;
-    private final Tracer tracer;
+    private Tracer tracer;
 
-    public CustomEndpointController(MongoTemplate mongoTemplate) {
+    @Autowired
+    public CustomEndpointController(MongoTemplate mongoTemplate, Tracer tracer) {
         this.mongoTemplate = mongoTemplate;
-        this.tracer = JaegerTracerHelper.initTracer("custom-endpoint-controller");
+        this.tracer = tracer;
     }
 
     /**
@@ -65,8 +74,8 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/people/{nconst}/titles")
     public List<Title> getAllTitles(@PathVariable String nconst) {
-        Span span = tracer.buildSpan("get-person-titles").start();
-        span.log(ImmutableMap.of("event", "query-person-titles", "value", nconst));
+        final Span span = tracer.buildSpan("get-titles-from-person").start();
+        span.log(ImmutableMap.of("event", "get-titles-from-person", "value", nconst));
 
         MatchOperation filterByNconst = match(Criteria.where("nconst").is(nconst));
 
@@ -85,7 +94,6 @@ public class CustomEndpointController {
         AggregationResults<Document> aggregationResults = mongoTemplate.aggregate(aggregation, "principals_mapping", Document.class);
 
         span.finish();
-
         return documentToTitleList(aggregationResults);
     }
 
@@ -99,7 +107,7 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/titles/{tconst}/people")
     public List<PrincipalWithName> getAllPeople(@PathVariable String tconst) {
-        Span span = tracer.buildSpan("get-people-from-title").start();
+        final Span span = tracer.buildSpan("get-people-from-title").start();
         span.log(ImmutableMap.of("event", "query-people-from-title", "value", tconst));
 
         MatchOperation filterByNconst = match(Criteria.where("tconst").is(tconst));
@@ -123,7 +131,6 @@ public class CustomEndpointController {
         }
 
         span.finish();
-
         return mappedResults;
     }
 
@@ -137,6 +144,9 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/titles/{tconst}/crew")
     public List<PrincipalWithName> getAllCrew(@PathVariable String tconst) {
+        final Span span = tracer.buildSpan("get-crew-from-title").start();
+        span.log(ImmutableMap.of("event", "query-crew-from-title", "value", tconst));
+
         MatchOperation filterByNconst = match(Criteria.where("tconst").is(tconst));
         MatchOperation excludeCast = match(Criteria.where("category").ne("actress").andOperator(Criteria.where("category").ne("actor")));
         LookupOperation nameLookup = LookupOperation.newLookup()
@@ -159,6 +169,7 @@ public class CustomEndpointController {
             p.person.remove("_id");
         }
 
+        span.finish();
         return mappedResults;
     }
 
@@ -172,6 +183,9 @@ public class CustomEndpointController {
      */
     @RequestMapping(method = RequestMethod.GET, value = "/titles/{tconst}/cast")
     public List<PrincipalWithName> getAllCast(@PathVariable String tconst) {
+        final Span span = tracer.buildSpan("get-cast-from-title").start();
+        span.log(ImmutableMap.of("event", "query-cast-from-title", "value", tconst));
+
         MatchOperation filterByNconst = match(Criteria.where("tconst").is(tconst));
         MatchOperation includeCast = match(new Criteria().orOperator(Criteria.where("category").is("actor"), Criteria.where("category").is("actress")));
         LookupOperation nameLookup = LookupOperation.newLookup()
@@ -194,6 +208,7 @@ public class CustomEndpointController {
             p.person.remove("_id");
         }
 
+        span.finish();
         return mappedResults;
     }
 
