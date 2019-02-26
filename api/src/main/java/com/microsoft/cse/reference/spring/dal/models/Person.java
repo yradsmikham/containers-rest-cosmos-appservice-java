@@ -13,6 +13,7 @@ public class Person {
     @Id
     public String nconst;
     public String primaryName;
+    public String hobby;
     public Integer birthYear;
     public Integer deathYear;
     public List<String> primaryProfession;

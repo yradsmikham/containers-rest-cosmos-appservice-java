@@ -186,6 +186,7 @@ public class BasicRouteTests {
                 "      \"primaryName\" : \"Juliette Lewis\",\n" +
                 "      \"birthYear\" : 1973,\n" +
                 "      \"deathYear\" : null,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\" : [ \"actress\", \"soundtrack\", \"director\" ],\n" +
                 "      \"knownForTitles\" : [ \"tt0116367\", \"tt1322269\", \"tt0110632\", \"tt0101540\" ],\n" +
                 "      \"_links\" : {\n" +
@@ -201,6 +202,7 @@ public class BasicRouteTests {
                 "      \"primaryName\" : \"James Cromwell\",\n" +
                 "      \"birthYear\" : 1940,\n" +
                 "      \"deathYear\" : null,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\" : [ \"actor\", \"producer\", \"soundtrack\" ],\n" +
                 "      \"knownForTitles\" : [ \"tt0112431\", \"tt0120689\", \"tt2245084\", \"tt0119488\" ],\n" +
                 "      \"_links\" : {\n" +
@@ -216,6 +218,7 @@ public class BasicRouteTests {
                 "      \"primaryName\" : \"Sylvester Stallone\",\n" +
                 "      \"birthYear\" : 1946,\n" +
                 "      \"deathYear\" : null,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\" : [ \"actor\", \"writer\", \"producer\" ],\n" +
                 "      \"knownForTitles\" : [ \"tt3076658\", \"tt0089927\", \"tt0084602\", \"tt0075148\" ],\n" +
                 "      \"_links\" : {\n" +
@@ -231,6 +234,7 @@ public class BasicRouteTests {
                 "      \"primaryName\" : \"Karl Malden\",\n" +
                 "      \"birthYear\" : 1912,\n" +
                 "      \"deathYear\" : 2009,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\" : [ \"actor\", \"soundtrack\", \"director\" ],\n" +
                 "      \"knownForTitles\" : [ \"tt0047296\", \"tt0066206\", \"tt0048973\", \"tt0044081\" ],\n" +
                 "      \"_links\" : {\n" +
@@ -246,6 +250,7 @@ public class BasicRouteTests {
                 "      \"primaryName\" : \"Elizabeth Montgomery\",\n" +
                 "      \"birthYear\" : 1933,\n" +
                 "      \"deathYear\" : 1995,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\" : [ \"actress\", \"soundtrack\", \"miscellaneous\" ],\n" +
                 "      \"knownForTitles\" : [ \"tt0076981\", \"tt0088713\", \"tt0057733\", \"tt0073273\" ],\n" +
                 "      \"_links\" : {\n" +
@@ -261,6 +266,7 @@ public class BasicRouteTests {
                 "      \"primaryName\": \"D.W. Griffith\",\n" +
                 "      \"birthYear\": 1875,\n" +
                 "      \"deathYear\": 1948,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\": [ \"director\", \"writer\", \"producer\" ],\n" +
                 "      \"knownForTitles\": [ \"tt0006864\", \"tt0010484\", \"tt0004972\", \"tt0012532\" ],\n" +
                 "      \"_links\": {\n" +
@@ -276,6 +282,7 @@ public class BasicRouteTests {
                 "      \"primaryName\": \"Florence Lawrence\",\n" +
                 "      \"birthYear\": 1886,\n" +
                 "      \"deathYear\": 1938,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\": [\n \"actress\" ],\n" +
                 "      \"knownForTitles\": [ \"tt0143358\", \"tt0200577\", \"tt0000770\", \"tt0200909\" ],\n" +
                 "      \"_links\": {\n" +
@@ -291,6 +298,7 @@ public class BasicRouteTests {
                 "      \"primaryName\": \"Arthur Marvin\",\n" +
                 "      \"birthYear\": 1859,\n" +
                 "      \"deathYear\": 1911,\n" +
+                "      \"hobby\" : null,\n" +
                 "      \"primaryProfession\": [ \"cinematographer\", \"director\", \"camera_department\" ],\n" +
                 "      \"knownForTitles\": [ \"tt0291476\", \"tt0000412\", \"tt0233612\", \"tt0300052\" ],\n" +
                 "      \"_links\": {\n" +
