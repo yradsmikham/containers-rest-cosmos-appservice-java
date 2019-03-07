@@ -4,7 +4,7 @@ trigger:
     - master
   paths:
     include:
-    - infrastructure/*
+    - infrastructure/global-resources/*
 pool:
   vmImage: 'Ubuntu 16.04'
 
@@ -16,15 +16,15 @@ steps:
     azureSubscription: $(serviceConnectionAzureSubscription)
     resourceGroupName: $(resourceGroupName)
     location: $(location)
-    csmFile: infrastructure/azuredeploy.json
-    overrideParameters: '-application_name $(applicationName) -docker_title_url $(acrLoginServer) -docker_person_url $(acrLoginServer) -docker_ui_url $(acrLoginServer) -vaultResourceGroup $(vaultResourceGroup) -vaultName $(vaultName)'
+    csmFile: infrastructure/global-resources/azuredeploy.json
+    overrideParameters: '-database_account_name $(database_account_name) -database-name $(database-name) -container_registry_name $(container_registry_name) -key_vault_name $(key_vault_name) -traffic_manager_profiles_name $(traffic_manager_profiles_name) -objectId $(objectId)'
     deploymentMode: Validation
 
 # Copy ARM deployment JSON
 - task: CopyFiles@2
   displayName: 'Copy ARM deployment JSON'
   inputs:
-    contents: 'infrastructure/azuredeploy.json'
+    contents: 'infrastructure/global-resources/azuredeploy.json'
     targetFolder: '$(Build.ArtifactStagingDirectory)'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
