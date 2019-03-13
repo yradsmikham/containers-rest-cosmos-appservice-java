@@ -25,10 +25,6 @@ steps:
   workingDirectory: ui/
   displayName: 'NPM Install Step'
 - script: |
-    npm run lint
-  workingDirectory: ui/
-  displayName: 'NPM Lint Step'
-- script: |
     npm run test
   workingDirectory: ui/
   displayName: 'NPM Test Step'
