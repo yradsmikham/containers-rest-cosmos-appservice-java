@@ -1,0 +1,30 @@
+# Docker image
+# Build a Docker image to deploy, run, or push to a container registry.
+# Add steps that use Docker Compose, tag images, push to a registry, run an image, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
+trigger:
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - api/*
+
+pool:
+  vmImage: 'Ubuntu 16.04'
+
+steps:
+- script: |
+    docker build -t $ACR_SERVER/$ACR_CONTAINER_TAG .
+  workingDirectory: api/
+  displayName: 'Docker Test, Build and Package'
+
+- script: |
+    docker login $(ACR_SERVER) -u $(ACR_USERNAME) -p $(ACR_PASSWORD)
+  displayName: 'Docker Login'
+  
+- script: |
+    docker push $ACR_SERVER/$ACR_CONTAINER_TAG
+  displayName: 'Docker Push'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
